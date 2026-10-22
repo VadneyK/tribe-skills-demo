@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Concept demo of a skills overview for a membership directory. Every member shown is made up.">
+<title>Tribe Skills Overview</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --surface-2: #f3f2ee;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #6f6e69;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --accent: #2a78d6;
+    --accent-ink: #1c5cab;
+    --accent-wash: rgba(42, 120, 214, 0.10);
+    --lv-1: #86b6ef;
+    --lv-2: #2a78d6;
+    --lv-3: #104281;
+    --seq-1: #cde2fb; --seq-2: #9ec5f4; --seq-3: #6da7ec; --seq-4: #3987e5; --seq-5: #256abf; --seq-6: #184f95; --seq-7: #0d366b;
+    --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
+    --good-ink: #006300; --warning-ink: #8a5a00; --critical-ink: #b02a2a;
+    --demo: #8a5a00; --demo-wash: rgba(250, 178, 25, 0.16);
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+      --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a9890;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --accent: #3987e5; --accent-ink: #86b6ef; --accent-wash: rgba(57,135,229,0.16);
+      --lv-1: #184f95; --lv-2: #3987e5; --lv-3: #9ec5f4;
+      --seq-1: #1c2a3d; --seq-2: #184f95; --seq-3: #1c5cab; --seq-4: #2a78d6; --seq-5: #5598e7; --seq-6: #86b6ef; --seq-7: #cde2fb;
+      --good-ink: #0ca30c; --warning-ink: #fab219; --critical-ink: #e66767;
+      --demo: #fab219; --demo-wash: rgba(250,178,25,0.12);
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+    --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a9890;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --accent: #3987e5; --accent-ink: #86b6ef; --accent-wash: rgba(57,135,229,0.16);
+    --lv-1: #184f95; --lv-2: #3987e5; --lv-3: #9ec5f4;
+    --seq-1: #1c2a3d; --seq-2: #184f95; --seq-3: #1c5cab; --seq-4: #2a78d6; --seq-5: #5598e7; --seq-6: #86b6ef; --seq-7: #cde2fb;
+    --good-ink: #0ca30c; --warning-ink: #fab219; --critical-ink: #e66767;
+    --demo: #fab219; --demo-wash: rgba(250,178,25,0.12);
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--page); color: var(--ink);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 20px 16px 96px; }
+
+  header.top { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 16px; }
+  header.top h1 { font-size: 22px; line-height: 1.2; margin: 0 0 4px; font-weight: 650; letter-spacing: -0.01em; }
+  header.top p { margin: 0; color: var(--ink-2); max-width: 60ch; }
+  .demo-badge { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--demo); background: var(--demo-wash); vertical-align: 3px; }
+  .concept { margin: 0 0 16px; padding: 10px 14px; border-radius: 10px; background: var(--demo-wash); color: var(--ink); font-size: 13px; }
+  .concept b { color: var(--demo); }
+  .viewer { display: flex; align-items: center; gap: 8px; color: var(--ink-2); font-size: 13px; }
+
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; padding: 2px; background: var(--surface); }
+  .seg button { border: 0; background: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; color: var(--ink-2); }
+  .seg button[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent-ink); font-weight: 600; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; position: sticky; top: 0; z-index: 5; }
+  .filters input[type=search], .filters select { height: 34px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); padding: 0 10px; min-width: 0; }
+  .filters input[type=search] { flex: 1 1 180px; }
+  .filters label.check { display: inline-flex; align-items: center; gap: 6px; padding: 0 6px; color: var(--ink-2); white-space: nowrap; }
+  .link-btn { border: 0; background: none; color: var(--accent-ink); cursor: pointer; padding: 4px 6px; border-radius: 6px; }
+  .link-btn:hover { background: var(--accent-wash); }
+  .link-btn:disabled { color: var(--muted); cursor: not-allowed; background: none; }
+
+  nav.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--grid); margin-bottom: 16px; overflow-x: auto; }
+  nav.tabs button { border: 0; background: none; padding: 10px 12px; cursor: pointer; color: var(--ink-2); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  nav.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+  nav.tabs .count { font-size: 12px; color: var(--muted); margin-left: 4px; }
+
+  .grid { display: grid; gap: 12px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 12px; }
+  @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tile, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+  .tile { padding: 12px 14px; }
+  .tile .label { color: var(--ink-2); font-size: 13px; }
+  .tile .value { font-size: 26px; font-weight: 650; line-height: 1.2; margin-top: 2px; }
+  .tile .sub { color: var(--muted); font-size: 12px; }
+
+  .card { padding: 16px; margin-bottom: 12px; min-width: 0; }
+  .card-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+  .card-head h2 { font-size: 15px; margin: 0; font-weight: 650; }
+  .card-head p { margin: 2px 0 0; color: var(--ink-2); font-size: 13px; }
+  .two { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  @media (max-width: 900px) { .two { grid-template-columns: 1fr; } }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--ink-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  /* Ranked bars, stacked by level */
+  .bars { display: grid; gap: 2px; }
+  .bar-row { display: grid; grid-template-columns: minmax(96px, 168px) minmax(0, 1fr); gap: 10px; align-items: center; padding: 3px 4px; border-radius: 6px; cursor: pointer; border: 0; background: none; text-align: left; width: 100%; }
+  .bar-row:hover, .bar-row:focus-visible { background: var(--surface-2); outline: none; }
+  .bar-row[aria-pressed="true"] { background: var(--accent-wash); }
+  .bar-row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
+  .bar-row .name .tick { color: var(--accent-ink); font-weight: 700; margin-right: 4px; }
+  .bar-track { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .bar { display: flex; gap: 2px; height: 14px; }
+  .bar i { display: block; height: 100%; }
+  .bar i:last-child { border-radius: 0 4px 4px 0; }
+  .bar-val { font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .axis-note { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-top: 8px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { color: var(--ink-2); font-weight: 600; font-size: 12px; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .table-scroll { overflow-x: auto; }
+
+  /* Heatmap */
+  .heat { display: grid; gap: 2px; font-size: 12px; }
+  .heat .h { color: var(--ink-2); padding: 4px 0; text-align: center; font-weight: 600; line-height: 1.2; font-size: 11px; min-width: 0; }
+  .heat .h small { display: block; font-weight: 400; color: var(--muted); }
+  .heat .r { color: var(--ink); padding: 0 6px 0 0; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .heat .c { height: 34px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; cursor: default; }
+  .heat .c:hover, .heat .c:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .ramp { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .ramp .steps { display: flex; gap: 2px; }
+  .ramp .steps i { width: 18px; height: 10px; border-radius: 2px; }
+
+  /* Find people */
+  .picker { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px; border-radius: 999px; background: var(--accent-wash); color: var(--accent-ink); font-weight: 600; font-size: 13px; }
+  .chip button { border: 0; background: none; cursor: pointer; color: inherit; width: 22px; height: 22px; border-radius: 50%; line-height: 1; }
+  .chip button:hover { background: var(--accent-wash); }
+  .picker input { height: 32px; border: 1px solid var(--border); border-radius: 8px; padding: 0 10px; background: var(--surface); min-width: 0; flex: 1 1 200px; max-width: 280px; }
+  .summary { color: var(--ink-2); margin: 12px 0; }
+  .summary strong { color: var(--ink); }
+  .people { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+  .person { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: var(--surface); display: flex; flex-direction: column; gap: 8px; }
+  .person .who { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .person .who b { font-weight: 600; }
+  .person .who span { color: var(--muted); font-size: 12px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 4px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink); }
+  .dots { display: inline-flex; gap: 2px; }
+  .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--grid); }
+  .dots i.on { background: var(--accent); }
+  .help { color: var(--good-ink); font-size: 12px; }
+  .btn { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+  .btn:hover { background: var(--surface-2); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .empty { color: var(--muted); padding: 24px 8px; text-align: center; }
+  .note { color: var(--muted); font-size: 12px; margin-top: 10px; }
+
+  .status { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 12px; white-space: nowrap; }
+  .status svg { flex: none; }
+  .status.ok { color: var(--good-ink); }
+  .status.thin { color: var(--warning-ink); }
+  .status.gap { color: var(--critical-ink); }
+
+  .tray { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); width: min(720px, calc(100% - 32px)); background: var(--ink); color: var(--page); border-radius: 12px; padding: 10px 12px 10px 16px; display: flex; gap: 12px; align-items: center; justify-content: space-between; box-shadow: 0 8px 28px rgba(0,0,0,.25); z-index: 10; }
+  .tray[hidden] { display: none; }
+  .tray .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tray .btn { background: var(--page); color: var(--ink); border: 0; white-space: nowrap; }
+
+  .toast { position: fixed; right: 16px; bottom: 16px; max-width: 360px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; box-shadow: 0 8px 28px rgba(0,0,0,.18); z-index: 20; }
+  .toast[hidden] { display: none; }
+
+  #tip { position: fixed; pointer-events: none; z-index: 30; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.15); max-width: 260px; }
+  #tip[hidden] { display: none; }
+  #tip .tv { font-weight: 650; font-size: 14px; color: var(--ink); }
+  #tip .tl { color: var(--ink-2); }
+  #tip .row { display: flex; align-items: center; gap: 6px; }
+  #tip .key { width: 10px; height: 2px; display: inline-block; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 520px) {
+    header.top h1 { font-size: 19px; }
+    .bar-row { grid-template-columns: 104px minmax(0, 1fr); }
+    .filters { position: static; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Skills across Tribe <span class="demo-badge">Demo · fake members</span></h1>
+      <p>See who can help with what, without opening every profile. Filters at the top apply to every view.</p>
+    </div>
+    <div class="viewer">
+      <span id="viewer-label">Viewing as</span>
+      <div class="seg" role="group" aria-labelledby="viewer-label">
+        <button type="button" data-viewer="member" aria-pressed="true">Member</button>
+        <button type="button" data-viewer="leader" aria-pressed="false">Leader</button>
+      </div>
+    </div>
+  </header>
+
+  <p class="concept"><b>Concept demo.</b> This is an idea for what a skills overview in Tribe could look like. Every person here is made up and no real member data is used. Nothing you click is saved.</p>
+
+  <form class="filters" id="filters" role="search" onsubmit="return false">
+    <label class="sr-only" for="f-query">Search skills</label>
+    <input type="search" id="f-query" placeholder="Search skills, e.g. photo, baking">
+    <label class="sr-only" for="f-community">Community</label>
+    <select id="f-community"><option value="">All communities</option></select>
+    <label class="sr-only" for="f-category">Category</label>
+    <select id="f-category"><option value="">All categories</option></select>
+    <label class="sr-only" for="f-level">Level</label>
+    <select id="f-level">
+      <option value="0">Any level</option>
+      <option value="2">Capable or expert</option>
+      <option value="3">Expert only</option>
+    </select>
+    <label class="check"><input type="checkbox" id="f-willing"> Happy to help only</label>
+    <button type="button" class="link-btn" id="f-reset">Reset</button>
+  </form>
+
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button type="button" role="tab" data-tab="overview" aria-selected="true">Overview</button>
+    <button type="button" role="tab" data-tab="find" aria-selected="false">Find people<span class="count" id="find-count"></span></button>
+    <button type="button" role="tab" data-tab="project" aria-selected="false">Plan a project</button>
+    <button type="button" role="tab" data-tab="quality" aria-selected="false">Data quality</button>
+  </nav>
+
+  <section id="tab-overview" role="tabpanel">
+    <div class="grid kpis" id="kpis"></div>
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Skills by number of members</h2>
+            <p>Click skills to pick them, then find the people.</p>
+          </div>
+          <div class="seg" role="group" aria-label="Show as">
+            <button type="button" data-view="chart" aria-pressed="true">Chart</button>
+            <button type="button" data-view="table" aria-pressed="false">Table</button>
+          </div>
+        </div>
+        <div class="legend" id="level-legend" style="margin-bottom:10px"></div>
+        <div id="skills-body"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Where skills live</h2>
+            <p>Share of each community with at least one skill in the category.</p>
+          </div>
+        </div>
+        <div id="heat-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-find" role="tabpanel" hidden>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Find people by skill</h2>
+          <p>Pick one or more skills. "All" finds people who have every one.</p>
+        </div>
+        <div class="seg" role="group" aria-label="Match">
+          <button type="button" data-mode="any" aria-pressed="true">Any</button>
+          <button type="button" data-mode="all" aria-pressed="false">All</button>
+        </div>
+      </div>
+      <div class="picker" id="picker"></div>
+      <div class="summary" id="find-summary"></div>
+      <div class="people" id="people"></div>
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
+        <button type="button" class="btn" id="export">Download list (CSV)</button>
+      </div>
+      <p class="note">Private profiles are counted but never named. Contact details stay hidden: "Ask to connect" sends a message through Tribe.</p>
+    </div>
+  </section>
+
+  <section id="tab-project" role="tabpanel" hidden>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2><label for="project-name" class="sr-only">Project name</label><input id="project-name" style="font:inherit;font-weight:650;border:0;background:none;padding:0;width:min(420px,100%)"></h2>
+          <p>List what the project needs. Each row shows how many people are happy to help.</p>
+        </div>
+      </div>
+      <div class="picker" id="needs-picker"></div>
+      <div class="summary" id="project-summary"></div>
+      <div class="table-scroll"><table id="coverage"></table></div>
+    </div>
+  </section>
+
+  <section id="tab-quality" role="tabpanel" hidden>
+    <div class="grid kpis" id="dq-kpis"></div>
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head"><div><h2>Free text with no match</h2><p>Not counted anywhere yet. A leader can merge it into a skill or add a new skill.</p></div></div>
+        <div class="table-scroll"><table id="dq-unmapped"></table></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>Merged automatically</h2><p>Spellings that already count toward a skill.</p></div></div>
+        <div class="table-scroll"><table id="dq-alias"></table></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="tray" id="tray" hidden>
+  <span class="txt" id="tray-txt"></span>
+  <span style="display:flex;gap:8px">
+    <button type="button" class="btn" id="tray-clear" style="background:transparent;color:inherit">Clear</button>
+    <button type="button" class="btn" id="tray-go">Find people →</button>
+  </span>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+<div id="tip" role="tooltip" hidden></div>
+
+<script src="fake-data.js"></script>
+<script src="aggregate.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
