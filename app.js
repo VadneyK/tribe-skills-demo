@@ -16,7 +16,7 @@
     showAll: false,
     selected: [],
     mode: "any",
-    project: { name: "Wedding gift (example)", needs: ["photography", "calligraphy", "woodworking", "baking", "florals", "guitar"] },
+    project: { name: "Church picnic (example)", needs: ["photography", "calligraphy", "woodworking", "baking", "florals", "guitar"] },
   };
 
   // ---------- tiny DOM helpers (text always via textContent) ----------
